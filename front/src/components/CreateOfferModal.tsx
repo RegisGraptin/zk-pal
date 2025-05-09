@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CreateOfferModal({ onClose }) {
   const [formData, setFormData] = useState({
@@ -9,7 +9,6 @@ export default function CreateOfferModal({ onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
     onClose();
   };
 
@@ -36,19 +35,8 @@ export default function CreateOfferModal({ onClose }) {
 
           <div className="form-control mt-4">
             <label className="label">
-              <span className="label-text">Token to Lock</span>
+              <span className="label-text">Token to Lock: USDC</span>
             </label>
-            <select
-              className="select select-bordered"
-              value={formData.token}
-              onChange={(e) =>
-                setFormData({ ...formData, token: e.target.value })
-              }
-            >
-              <option>USDC</option>
-              <option>USDT</option>
-              <option>DAI</option>
-            </select>
           </div>
 
           <div className="form-control mt-4">

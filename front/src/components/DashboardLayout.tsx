@@ -31,6 +31,7 @@ export default function DashboardLayout() {
           <label
             htmlFor="create-offer-modal"
             className="btn btn-primary modal-button"
+            onClick={() => setShowModal(true)}
           >
             Create New Offer
           </label>
