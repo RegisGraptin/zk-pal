@@ -41,6 +41,7 @@ contract Escrow {
             amount: amount,
             status: Status.AVAILABLE
         });
+        activeEntries.push(lastEntryId);
         lastEntryId++;
     }
 
