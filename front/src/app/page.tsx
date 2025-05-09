@@ -1,8 +1,11 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+"use client";
 
-export default function Home() {
+import DashboardLayout from "@/components/DashboardLayout";
+import { useState } from "react";
+
+export default function Dashboard() {
+  
   return (
-    
-    <ConnectButton />
-  );
+    <DashboardLayout />
+  )
 }
