@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
-require('@openzeppelin/hardhat-upgrades');
+import "@openzeppelin/hardhat-upgrades";
+import "@nomicfoundation/hardhat-foundry";
 import "@oasisprotocol/sapphire-hardhat";
 import "@nomicfoundation/hardhat-toolbox";
 

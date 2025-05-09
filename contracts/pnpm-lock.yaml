@@ -15,6 +15,9 @@ importers:
       '@nomicfoundation/hardhat-ethers':
         specifier: ^3.0.8
         version: 3.0.8(ethers@6.14.0)(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3))
+      '@nomicfoundation/hardhat-foundry':
+        specifier: ^1.1.3
+        version: 1.1.3(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3))
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^5.0.0
         version: 5.0.0(6c4d689137d97e92e06f77ab9f45415f)
@@ -375,6 +378,11 @@ packages:
     peerDependencies:
       ethers: ^6.1.0
       hardhat: ^2.0.0
+
+  '@nomicfoundation/hardhat-foundry@1.1.3':
+    resolution: {integrity: sha512-30Ezc3hlZ4pC5Z/9W9euW5uoPKKQQKaecLETHJH8BPpd30zYOooy6HfjmcTY1/taOQjlwirOdNO7tHlje8Qcgw==}
+    peerDependencies:
+      hardhat: ^2.17.2
 
   '@nomicfoundation/hardhat-ignition-ethers@0.15.11':
     resolution: {integrity: sha512-srXzvf7qCDHLrnvQWtpVA9gWpcbp4BcnsOqJt6ISet9OlUnxk4GgRMbdFq4YpM48bHQTX397jS9yk1AtJCjt/g==}
@@ -3254,6 +3262,11 @@ snapshots:
       lodash.isequal: 4.5.0
     transitivePeerDependencies:
       - supports-color
+
+  '@nomicfoundation/hardhat-foundry@1.1.3(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3))':
+    dependencies:
+      hardhat: 2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3)
+      picocolors: 1.1.1
 
   '@nomicfoundation/hardhat-ignition-ethers@0.15.11(@nomicfoundation/hardhat-ethers@3.0.8(ethers@6.14.0)(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3)))(@nomicfoundation/hardhat-ignition@0.15.11(@nomicfoundation/hardhat-verify@2.0.13(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3)))(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3)))(@nomicfoundation/ignition-core@0.15.11)(ethers@6.14.0)(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3))':
     dependencies:

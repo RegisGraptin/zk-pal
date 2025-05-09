@@ -3,6 +3,8 @@ pragma solidity ^0.8.9;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import "./ERC20Mock.sol";
+
 contract Escrow {
     
     enum Status {
@@ -12,7 +14,8 @@ contract Escrow {
     }
 
     // https://docs.oasis.io/build/sapphire/addresses
-    address constant USDC = 0x97eec1c29f745dC7c267F90292AA663d997a601D; 
+    // address constant USDC = 0x97eec1c29f745dC7c267F90292AA663d997a601D; 
+    address USDC;
 
     struct EscrowEntry {
         address creator;
@@ -28,6 +31,10 @@ contract Escrow {
     mapping(uint256 => address) private isLocked;
 
     uint256[] public activeEntries;
+
+    constructor () {
+        USDC = address(new ERC20Mock());
+    }
 
 
     function createEntry(

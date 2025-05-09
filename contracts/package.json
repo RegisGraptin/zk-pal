@@ -2,6 +2,7 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "@nomicfoundation/hardhat-foundry": "^1.1.3",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@oasisprotocol/sapphire-hardhat": "^2.22.2",
     "@openzeppelin/hardhat-upgrades": "^3.9.0",
