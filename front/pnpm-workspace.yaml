@@ -1,4 +1,6 @@
 onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - blake-hash
   - bufferutil
   - keccak
   - sharp

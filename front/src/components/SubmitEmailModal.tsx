@@ -1,4 +1,10 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { generateEmailVerifierInputs } from "@zk-email/helpers";
+import { verifyDKIMSignature } from "@zk-email/helpers/dist/dkim";
+
+import { UltraHonkBackend } from "@aztec/bb.js";
+import { Noir } from "@noir-lang/noir_js";
+import circuit from "../data/circuits.json";
 
 export default function SubmitEmailModal() {
   const [showModal, setShowModal] = useState(false);
@@ -10,9 +16,78 @@ export default function SubmitEmailModal() {
     setSelectedFile(file ? file.name : null); // Store file name in state
   };
 
-  const generateZKProof = () => {
-    console.log("Generate ZK email proof");
-  };
+  async function getFileContentAsString(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    // Extract the email content
+    const file = formData.get("uploadFile") as File;
+    const content = await getFileContentAsString(file);
+
+    const inputParams = {
+      maxBodyLength: 25216, // Required to avoid exceeding ZK circuit limit
+    };
+
+    const verifier = await generateEmailVerifierInputs(content, inputParams);
+
+    console.log("Prepare data...");
+    console.log(verifier);
+
+    let dkim = await verifyDKIMSignature(content);
+    console.log(dkim.headers);
+
+    try {
+      console.log("Loading noir circuit");
+      const noir = new Noir(circuit);
+      const backend = new UltraHonkBackend(circuit.bytecode);
+
+      console.log("Backend ready");
+
+      const { witness } = await noir.execute({
+        header: dkim.headers,
+        body: dkim.body,
+        pubkey: dkim.publicKey,
+        signature: dkim.signature,
+        body_hash_index: dkim.bodyHash,
+        dkim_header_sequence: 100,
+      });
+    } catch (e) {
+      console.log("Issue");
+      console.log(e);
+    }
+
+    // console.log(toHex(verifier.emailBody));
+
+    // Generate a zk proof
+  }
+
+  //   const generateZKProof = () => {
+  //     console.log("Generate ZK email proof");
+
+  //     const parser = new MimeParser();
+
+  //     parser.onheader = (node) => {
+  //       const dkim = node.headers.get("dkim-signature")?.initial;
+  //       if (dkim) {
+  //         console.log("DKIM-Signature:", dkim);
+  //       } else {
+  //         console.warn("No DKIM-Signature found.");
+  //       }
+  //     };
+
+  //     parser.write(arrayBuffer);
+  //     parser.end();
+  //   };
 
   return (
     <>
@@ -22,7 +97,7 @@ export default function SubmitEmailModal() {
             <h3 className="font-bold text-lg mb-4">
               Upload your email to prove it
             </h3>
-            <div>
+            <form onSubmit={onSubmit}>
               <label
                 htmlFor="uploadFile"
                 className="pt-10 bg-[#1f1f1f] text-gray-300 font-semibold text-base rounded h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-dashed border-gray-600 mx-auto font-[sans-serif] transition hover:border-primary"
@@ -67,7 +142,6 @@ export default function SubmitEmailModal() {
                 </button>
 
                 <button
-                  onClick={generateZKProof}
                   disabled={!selectedFile}
                   className={`flex-1 py-3 rounded-lg font-medium transition-all ${
                     selectedFile
@@ -78,7 +152,7 @@ export default function SubmitEmailModal() {
                   Upload Email
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
