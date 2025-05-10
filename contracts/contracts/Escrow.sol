@@ -26,6 +26,8 @@ contract Escrow {
 
     error InsufficientFund();
 
+    event NewSubscription(uint256, address);
+
     /// @notice Track the last ID 
     uint256 lastEntryId;
 
@@ -46,6 +48,11 @@ contract Escrow {
     function getEntry(uint256 id) external view returns (uint256, Status) {
         EscrowEntry memory entry = entries[id];
         return (entry.amount, entry.status);
+    }
+
+    function getPaypalHandle(uint256 id) external view returns (string memory) {
+        require(isLocked[id] == msg.sender, "NOT_AUTHORIZED");
+        return entries[id].paypalHandle;
     }
 
     function createEntry(
@@ -71,6 +78,7 @@ contract Escrow {
         require(isLocked[id] == address(0), "NEED_TO_BE_LOCK");
         isLocked[id] = msg.sender;
         entries[id].status = Status.ONGOING;
+        emit NewSubscription(id, msg.sender);
     }
 
     // FIXME: add modifier only app ID
