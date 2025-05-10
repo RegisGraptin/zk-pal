@@ -17,12 +17,11 @@ export default function CreateOfferModal({ onClose }) {
     e.preventDefault();
   };
 
-  const {
-    writeContract,
-    data: txHashApprove,
-    isPending,
-    isSuccess,
-  } = useWriteContract();
+  const { writeContract, data: txHash, isPending } = useWriteContract();
+
+  const { isSuccess, isLoading } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
 
   useEffect(() => {
     console.log("isTxSuccess: ", isSuccess);
@@ -118,14 +117,14 @@ export default function CreateOfferModal({ onClose }) {
             {!isApproved ? (
               <button
                 onClick={handleApprove}
-                disabled={!formData.amount || isPending}
+                disabled={!formData.amount || isPending || isLoading}
                 className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                  formData.amount && !isPending
+                  formData.amount && !isPending && !isLoading
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-gray-700 cursor-not-allowed"
                 }`}
               >
-                {isPending ? (
+                {isPending || isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="animate-spin">🌀</span>
                     Approving...
@@ -137,14 +136,14 @@ export default function CreateOfferModal({ onClose }) {
             ) : (
               <button
                 onClick={handleSend}
-                disabled={!formData.amount || isPending}
+                disabled={!formData.amount || isPending || isLoading}
                 className={`flex-1 py-3 rounded-lg font-medium transition-all ${
-                  formData.amount && !isPending
+                  formData.amount && !isPending && !isLoading
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-gray-700 cursor-not-allowed"
                 }`}
               >
-                {isPending ? (
+                {isPending || isLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="animate-spin">🌀</span>
                     Sending...

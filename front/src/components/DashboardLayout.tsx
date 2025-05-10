@@ -13,24 +13,26 @@ export default function DashboardLayout() {
   const [showModal, setShowModal] = useState(false);
 
   // Read all the entries available
-  const { data: activeEntries, isLoading: activeEntriesLoading } =
-    useReadContract({
-      address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
-      abi: Escrow.abi,
-      functionName: "getActiveEntries",
-      args: [],
-    });
+  const { data: activeEntries, refetch: refetchEntries } = useReadContract({
+    address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
+    abi: Escrow.abi,
+    functionName: "getActiveEntries",
+    args: [],
+  });
 
-  const { data: entires } = useReadContracts({
-    contracts: Array.from(activeEntries as []).map((_, index) => ({
-      abi: Escrow.abi,
-      address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
-      functionName: "bottleData",
-      args: [index],
-    })),
+  const { data: entries } = useReadContracts({
+    contracts: Array.from(activeEntries ? (activeEntries as []) : []).map(
+      (index, _) => ({
+        abi: Escrow.abi,
+        address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
+        functionName: "getEntry",
+        args: [index],
+      })
+    ),
   });
 
   console.log("activeEntries:", activeEntries);
+  console.log("entries:", entries);
 
   const [offers] = useState([
     { id: 1, amount: 50, token: "USDC", status: "Pending", locked: 50 },
@@ -61,12 +63,21 @@ export default function DashboardLayout() {
             Create New Offer
           </label>
         </div>
-        {showModal && <CreateOfferModal onClose={() => setShowModal(false)} />}
+        {showModal && (
+          <CreateOfferModal
+            onClose={() => {
+              setShowModal(false);
+              refetchEntries();
+            }}
+          />
+        )}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {offers.map((offer) => (
-            <OfferCard key={offer.id} offer={offer} />
-          ))}
+          {(activeEntries as []) &&
+            (entries as []) &&
+            activeEntries.map((id, index) => (
+              <OfferCard key={id} offerId={id} offer={entries[index].result} />
+            ))}
         </div>
       </div>
     </div>
