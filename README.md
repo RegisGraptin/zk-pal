@@ -50,7 +50,7 @@ npx hardhat ignition deploy ./ignition/modules/Escrow.ts --network sapphire-test
 
 ### Frontend
 
-On the frontend
+On the frontend side we are using next js.
 
 
 
