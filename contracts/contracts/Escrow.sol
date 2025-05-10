@@ -15,7 +15,7 @@ contract Escrow {
 
     // https://docs.oasis.io/build/sapphire/addresses
     // address constant USDC = 0x97eec1c29f745dC7c267F90292AA663d997a601D; 
-    address USDC;
+    address public USDC;
 
     struct EscrowEntry {
         address creator;
@@ -32,10 +32,18 @@ contract Escrow {
 
     uint256[] public activeEntries;
 
-    constructor () {
-        USDC = address(new ERC20Mock());
+    constructor (address _usdc) {
+        USDC = _usdc;
     }
 
+    function getActiveEntries() external view returns (uint256[] memory) {
+        return activeEntries;
+    }
+
+    function getEntry(uint256 id) external returns (uint256, Status) {
+        EscrowEntry memory entry = entries[id];
+        return (entry.amount, entry.status);
+    }
 
     function createEntry(
         string memory paypalHandle,

@@ -3,9 +3,9 @@
 
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
-const EscrowModule = buildModule("EscrowModule", (m) => {
-  const escrow = m.contract("Escrow", ["0xc3Dd1C9DE3fDb23b94ADd25185CD4df9CB4b327a"], {});
-  return { escrow };
+const ERC20MockModule = buildModule("ERC20MockModule", (m) => {
+  const erc20 = m.contract("ERC20Mock", [], {});
+  return { erc20 };
 });
 
-export default EscrowModule;
+export default ERC20MockModule;
