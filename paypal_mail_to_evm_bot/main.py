@@ -1,147 +1,94 @@
-import logging
-import time
-from src.config import load_configuration
-from src.email_processor import EmailProcessor
-from src.blockchain_handler import BlockchainHandler
+import json
+import os
+import re
 
-# Configure basic logging
-# TODO: Allow log level to be set from config
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
-logger = logging.getLogger(__name__)
+from imap_tools import MailBox, AND
+from dotenv import load_dotenv
+from web3 import Web3
 
-POLL_INTERVAL_SECONDS = 300 # Check for new emails every 5 minutes
+load_dotenv()
 
-def main():
-    logger.info("Starting PayPal to EVM Bot...")
+class MailProvider:
+    def __init__(self, imap_server, imap_username, imap_password):
+        self.imap_server = imap_server
+        self.imap_username = imap_username
+        self.imap_password = imap_password
+        self.mailbox = None
     
-    blockchain_handler = None # Initialize
-    config = None
-    try:
-        config = load_configuration()
-        logger.setLevel(config.get("LOG_LEVEL", "INFO").upper())
-        logger.info("Configuration loaded.")
+    def connect(self):
+        """Connects to the IMAP server."""
+        try:
+            print(self.imap_server, self.imap_username, self.imap_password)
+            self.mailbox = MailBox(self.imap_server)
+            self.mailbox.login(self.imap_username, self.imap_password)
+            print(f"Successfully connected to IMAP server: {self.imap_server} as {self.imap_username}")
+            return True
+        except Exception as e:
+            print(f"Failed to connect to IMAP server: {e}")
+            return False
 
-        # Initialize BlockchainHandler if EVM config is present
-        if config.get("EVM_RPC_URL") and config.get("SENDER_PRIVATE_KEY"):
-            try:
-                logger.info("EVM configuration found. Initializing BlockchainHandler...")
-                blockchain_handler = BlockchainHandler(
-                    rpc_url=config["EVM_RPC_URL"],
-                    sender_private_key=config["SENDER_PRIVATE_KEY"],
-                    chain_id=config.get("CHAIN_ID") 
-                )
-                logger.info(f"BlockchainHandler initialized. Sender Address: {blockchain_handler.sender_address}")
-            except ConnectionError as ce:
-                logger.error(f"BlockchainHandler Connection Error: {ce}. EVM features will be disabled.")
-                blockchain_handler = None 
-            except Exception as e_bc:
-                logger.error(f"Error initializing BlockchainHandler: {e_bc}. EVM features will be disabled.", exc_info=True)
-                blockchain_handler = None
-        else:
-            logger.warning("EVM_RPC_URL or SENDER_PRIVATE_KEY not configured. EVM transaction features will be disabled.")
-
-    except ValueError as e:
-        logger.error(f"Configuration error: {e}")
-        logger.error("Please ensure IMAP_SERVER, IMAP_USERNAME, and IMAP_PASSWORD are set.")
-        logger.error("If using EVM features, also ensure EVM_RPC_URL and SENDER_PRIVATE_KEY are correctly set.")
-        return
-    except Exception as e_conf:
-        logger.error(f"An unexpected error occurred during initial configuration: {e_conf}", exc_info=True)
-        return
+    def fetch_paypal_emails(self, paypal_sender_email, mark_seen_after_fetch=True):
+        """Fetches unseen emails from the specified PayPal sender address and optionally marks them as seen."""
+        if not self.mailbox:
+            print("Not connected to mailbox. Call connect() first.")
+            return []
         
-    if not config:
-        logger.error("Configuration could not be loaded. Exiting.")
-        return
-
-    email_processor = EmailProcessor(
-        imap_server=config["IMAP_SERVER"],
-        imap_username=config["IMAP_USERNAME"],
-        imap_password=config["IMAP_PASSWORD"]
-    )
-
-    if not email_processor.connect():
-        logger.error("Failed to connect to IMAP server. Exiting.")
-        return
-
-    logger.info(f"Successfully connected to IMAP: {config.get('IMAP_SERVER', 'N/A')}. Bot is running...")
-    logger.info(f"Will check for new emails from {config.get('PAYPAL_SENDER_EMAIL', 'N/A')} every {POLL_INTERVAL_SECONDS} seconds.")
-
-    try:
-        while True:
-            logger.info("Checking for new PayPal emails...")
-            paypal_emails = email_processor.fetch_paypal_emails(config["PAYPAL_SENDER_EMAIL"])
+        emails_fetched = []
+        try:
+            self.mailbox.folder.set('INBOX')
+            print(f"Fetching unseen emails from {paypal_sender_email}...")
             
-            if not paypal_emails:
-                logger.info("No new PayPal emails found.")
-            else:
-                logger.info(f"Fetched {len(paypal_emails)} new PayPal email(s) to process.")
-                for email_msg in paypal_emails:
-                    logger.info(f"--- Processing Email --- UID: {email_msg.uid} Subject: {email_msg.subject}")
-                    parsed_details = email_processor.parse_email_details(email_msg)
-                    
-                    if parsed_details and \
-                       parsed_details.get("transaction_id") and \
-                       parsed_details.get("amount") and \
-                       parsed_details.get("transaction_type") == "received":
-                        
-                        logger.info("Successfully parsed PayPal email (received payment):")
-                        logger.info(f"  Transaction ID: {parsed_details.get('transaction_id')}")
-                        logger.info(f"  Amount: {parsed_details.get('amount')} {parsed_details.get('currency')}")
-                        logger.info(f"  From: {parsed_details.get('counterparty_name')}")
-                        
-                        if blockchain_handler and parsed_details.get("amount", 0) > 0:
-                            target_address = config.get("MOCKUP_RECIPIENT_ADDRESS")
-                            amount_to_send = parsed_details.get("amount") # This is float
-                            
-                            # Currency check - very basic, assuming native token transaction for now
-                            # A real system would need robust currency conversion if PayPal currency isn't the chain's native one.
-                            if parsed_details.get("currency") not in ["ETH", "BNB", "MATIC"]: # Add other native token symbols as needed
-                                logger.warning(f"Parsed currency {parsed_details.get('currency')} may not be the chain's native token. Attempting to send {amount_to_send} as native token. Implement proper conversion if needed.")
-                            
-                            gas_limit = config.get("GAS_LIMIT", 21000)
-                            raw_gas_price = config.get("GAS_PRICE_GWEI")
-                            gas_price_gwei = float(raw_gas_price) if raw_gas_price and raw_gas_price.lower() != 'auto' else None
+            # Fetch UIDs of unseen emails first
+            for mail in self.mailbox.fetch(AND(subject="Tr: Vous avez envoy")):
+                body = mail.text or mail.html or ''
+                match = re.search(r"Vous avez envoyé\s+([\d\s,.]+)\s*€\s*EUR\s+à\s+(.+?)\.", body)
+                if match:
+                    amount = match.group(1).replace(" ", "").replace(",", ".")
+                    name = match.group(2).strip()
+                    print("Name:", name, " - Amount:", amount)
+                    emails_fetched.append([name, amount])
 
-                            logger.info(f"Attempting EVM transaction: Send {amount_to_send} (parsed from email) to {target_address}")
-                            try:
-                                receipt = blockchain_handler.send_native_token(
-                                    recipient_address=target_address,
-                                    amount_ether=float(amount_to_send), # Ensure it's float
-                                    gas_limit=int(gas_limit),
-                                    gas_price_gwei=gas_price_gwei
-                                )
-                                if receipt and receipt.get('status') == 1:
-                                    logger.info(f"EVM Transaction successful for PayPal TX ID {parsed_details.get('transaction_id')}. EVM TX Hash: {receipt.transactionHash.hex()}")
-                                elif receipt:
-                                    logger.error(f"EVM Transaction failed (status 0) for PayPal TX ID {parsed_details.get('transaction_id')}. Receipt: {receipt}")
-                                else:
-                                    logger.error(f"EVM Transaction did not return a receipt or failed for PayPal TX ID {parsed_details.get('transaction_id')}.")
-                            except Exception as e_tx:
-                                logger.error(f"Exception during EVM transaction for PayPal TX ID {parsed_details.get('transaction_id')}: {e_tx}", exc_info=True)
-                        elif not blockchain_handler:
-                            logger.warning("BlockchainHandler not initialized or failed to initialize. Skipping EVM transaction.")
-                        elif parsed_details.get("amount", 0) <= 0:
-                            logger.warning(f"Parsed amount is zero or negative ({parsed_details.get('amount')}). Skipping EVM transaction.")
+            return emails_fetched
+        except Exception as e:
+            print(f"Error fetching PayPal emails: {e}", exc_info=True)
+            return []
 
-                    elif parsed_details and parsed_details.get("transaction_type") == "sent":
-                        logger.info("Parsed a 'sent' PayPal email. No action taken for this type.")
-                    elif parsed_details:
-                        logger.warning(f"Email parsed but did not meet criteria for EVM trigger or was not fully parsed: UID {email_msg.uid}")
-                    else:
-                        logger.warning(f"Could not parse details for email UID: {email_msg.uid}. Subject: {email_msg.subject}")
-            
-            logger.info(f"Waiting for {POLL_INTERVAL_SECONDS} seconds before next check...")
-            time.sleep(POLL_INTERVAL_SECONDS)
-            
-    except KeyboardInterrupt:
-        logger.info("Bot manually interrupted. Shutting down...")
-    except Exception as e_main_loop:
-        logger.error(f"An unexpected error occurred in the main loop: {e_main_loop}", exc_info=True)
-    finally:
-        if email_processor: # Check if email_processor was initialized
-            logger.info("Logging out from IMAP server...")
-            email_processor.logout()
-        logger.info("PayPal to EVM Bot shut down.")
+
+with open("Escrow.json") as f:
+    abi = json.load(f)['abi']
 
 if __name__ == "__main__":
-    main() 
+
+    provider = MailProvider(
+        os.getenv("IMAP_SERVER"),
+        os.getenv("IMAP_USERNAME"),
+        os.getenv("IMAP_PASSWORD")
+    )
+    # provider.connect()
+    # handles = provider.fetch_paypal_emails("service@paypal.fr")
+
+    w3 = Web3(Web3.HTTPProvider("https://testnet.sapphire.oasis.io"))
+
+    private_key = os.getenv("PRIVATE_KEY")
+    sender_address = w3.eth.account.from_key(private_key).address
+    nonce = w3.eth.get_transaction_count(sender_address)
+
+    contract_address = "0x50222E3513d8e4Ae8EC9B965979994364a10200F"
+    contract = w3.eth.contract(address=contract_address, abi=abi)
+
+    print(contract.functions.proofOfPaiement())
+
+    tx = {
+        'nonce': nonce,
+        'to': '0x50222E3513d8e4Ae8EC9B965979994364a10200F',
+        'gas': 21000,
+        'gasPrice': w3.to_wei(50, 'gwei'),
+        'chainId': 23295  # Sapphire-Testnet
+    }
+
+    print(tx)
+    # signed_tx = w3.eth.account.sign_transaction(tx, private_key)
+
+    # tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+
+    
