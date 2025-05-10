@@ -28,20 +28,15 @@ The process begins when a user creates an offer on a smart contract deployed on 
 
 The buyer forwards the PayPal confirmation email to a dedicated email address, accessible only by ROFL container. This container operates within a trusted execution environment (TEE) using Oasis's ROFL system. Its role is to automatically fetch incoming emails, verify their authenticity, extract the relevant details—such as the PayPal handle and transferred amount—and, upon successful validation, interact with the Sapphire smart contract to release the locked USDC to the buyer.
 
-
 ## Development Notes
 
 Originally, we wanted to generate a zero-knowledge proof from the PayPal confirmation email. This proof would have allowed the smart contract to verify the email's authenticity, including the provider’s signature and transaction details, without exposing sensitive information. Once verified, the contract could autonomously unlock the USDC to the buyer.
 
 However, during development, we encountered a critical limitation with the ZK-email approach: the size of PayPal’s confirmation emails exceeded the capacity of the Noir circuit, making it impossible to generate a valid proof. As a result, we pivoted to a more practical and scalable solution by leveraging Oasis’s ROFL system, which enables secure off-chain email processing through a trusted execution environment.
 
-
-
-
 ## Worflow illustration
 
 ![User Workflow](./workflow.png)
-
 
 ## How to use it
 
@@ -66,13 +61,11 @@ cp .env.example .env
 
 Then, you can deploy the `Escrow` smart contract by doing:
 
-
 ```bash
 npx hardhat ignition deploy ./ignition/modules/Escrow.ts --network sapphire-testnet
 ```
 
 > Notice here that we are deploying on `sapphire-testnet`. You may need to adapt based on your use case.
-
 
 ### Frontend
 
@@ -89,12 +82,3 @@ For the environement variable, you will have to defined the `Escrow` smart contr
 ```bash
 pnpm dev
 ```
-
-## Oasis feedback
-
-`sapphireHttpTransport from "@oasisprotocol/sapphire-wagmi-v2";` is not available.
-Doc from https://docs.oasis.io/build/sapphire/develop/browser/
-is not updated
-
-Need to use the one defined here:
-https://github.com/oasisprotocol/sapphire-paratime/tree/main/examples/wagmi-v2
