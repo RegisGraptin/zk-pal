@@ -24,10 +24,13 @@ contract Escrow {
         Status status;
     }
 
+    error InsufficientFund();
+
     /// @notice Track the last ID 
     uint256 lastEntryId;
 
     mapping(uint256 => EscrowEntry) private entries;
+    mapping(string => uint256) private handleToId;
     mapping(uint256 => address) private isLocked;
 
     uint256[] public activeEntries;
@@ -40,7 +43,7 @@ contract Escrow {
         return activeEntries;
     }
 
-    function getEntry(uint256 id) external returns (uint256, Status) {
+    function getEntry(uint256 id) external view returns (uint256, Status) {
         EscrowEntry memory entry = entries[id];
         return (entry.amount, entry.status);
     }
@@ -49,6 +52,7 @@ contract Escrow {
         string memory paypalHandle,
         uint256 amount
     ) external {
+        require(handleToId[paypalHandle] == 0, "ALREADY_USED_HANDLE");
         IERC20(USDC).transferFrom(msg.sender, address(this), amount);
         entries[lastEntryId] = EscrowEntry({
             creator: msg.sender,
@@ -56,6 +60,7 @@ contract Escrow {
             amount: amount,
             status: Status.AVAILABLE
         });
+        handleToId[paypalHandle] = lastEntryId;
         activeEntries.push(lastEntryId);
         lastEntryId++;
     }
@@ -68,8 +73,24 @@ contract Escrow {
         entries[id].status = Status.ONGOING;
     }
 
-    function proofOfPaiement(uint256 id) external {
+    // FIXME: add modifier only app ID
+    function proofOfPaiement(string memory handle, uint256 amount) external {
+        uint256 entryId = handleToId[handle];
+        if (amount < entries[entryId].amount) {
+            revert InsufficientFund();
+        }
+        require(isLocked[entryId] != address(0), "NO_SUBSCRIPTION");
+        
+        // Unlock the USDC
+        IERC20(USDC).transfer(isLocked[entryId], entries[entryId].amount);
 
+        // Clean the environment varialbe
+        entries[entryId].status = Status.FINISHED;
+
+        delete isLocked[entryId];
+        delete handleToId[handle];
+
+        // TODO: Should we clean the list of id?
     }
 
 }

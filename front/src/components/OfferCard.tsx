@@ -10,8 +10,13 @@ enum Status {
   FINISHED = 2,
 }
 
-export default function OfferCard({ offerId, offer }) {
-  const { writeContract, data: txHashApprove } = useWriteContract();
+interface OfferCardProps {
+  offerId: number;
+  offer: [bigint, number];
+}
+
+export default function OfferCard({ offerId, offer }: OfferCardProps) {
+  const { writeContract } = useWriteContract();
 
   const subscribeToTheOffer = () => {
     console.log("subscribeToTheOffer");

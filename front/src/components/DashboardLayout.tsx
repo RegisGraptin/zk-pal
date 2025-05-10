@@ -4,7 +4,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useState } from "react";
 import CreateOfferModal from "./CreateOfferModal";
 import OfferCard from "./OfferCard";
-import { getAddress } from "viem";
+import { Abi, getAddress } from "viem";
 
 import Escrow from "@/data/Escrow.json";
 import { useReadContract, useReadContracts } from "wagmi";
@@ -23,7 +23,7 @@ export default function DashboardLayout() {
   const { data: entries } = useReadContracts({
     contracts: Array.from(activeEntries ? (activeEntries as []) : []).map(
       (index, _) => ({
-        abi: Escrow.abi,
+        abi: Escrow.abi as Abi,
         address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
         functionName: "getEntry",
         args: [index],
@@ -33,11 +33,6 @@ export default function DashboardLayout() {
 
   console.log("activeEntries:", activeEntries);
   console.log("entries:", entries);
-
-  const [offers] = useState([
-    { id: 1, amount: 50, token: "USDC", status: "Pending", locked: 50 },
-    { id: 2, amount: 100, token: "USDT", status: "Completed", locked: 0 },
-  ]);
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -75,8 +70,8 @@ export default function DashboardLayout() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {(activeEntries as []) &&
             (entries as []) &&
-            activeEntries.map((id, index) => (
-              <OfferCard key={id} offerId={id} offer={entries[index].result} />
+            (activeEntries as []).map((id, index) => (
+              <OfferCard key={id} offerId={id} offer={entries![index].result as [bigint, number]} />
             ))}
         </div>
       </div>

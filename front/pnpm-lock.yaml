@@ -32,6 +32,9 @@ importers:
       '@zk-email/helpers':
         specifier: ^6.4.2
         version: 6.4.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
       emailjs-mime-parser:
         specifier: ^2.0.7
         version: 2.0.7
