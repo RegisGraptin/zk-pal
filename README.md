@@ -17,8 +17,41 @@ However, when developing this solution, we came across some issue by using ZK-em
 ![User Workflow](./workflow.png)
 
 
+## How to use it
 
------------
+### Smart contract deployment
+
+On the smart contract side, we are using Sapphire network to deploy our smart contract. First you will need to install the dependencies and compile the smart contract.
+
+```bash
+cd contracts/
+pnpm install
+npx hardhat compile
+```
+
+You will have also to defined the private key used for the deployment. You can do it:
+
+```bash
+cp .env.example .env
+# Fill in the file with your private key
+```
+
+> Notice: for the demo purpose, we have used a Mock ERC20 allowing us to facilitate the test. When using in production with real USDC, you will have to modify the ERC20 address in `contracts/ignition/modules/Escrow.ts`.
+
+Then, you can deploy the `Escrow` smart contract by doing:
+
+
+```bash
+npx hardhat ignition deploy ./ignition/modules/Escrow.ts --network sapphire-testnet
+```
+
+> Notice here that we are deploying on `sapphire-testnet`. You may need to adapt based on your use case.
+
+
+### Frontend
+
+On the frontend
+
 
 
 Getting access to crypto is becoming more and more difficult. You need to pass by centralized exchange, put a KYC, wait for validation...
