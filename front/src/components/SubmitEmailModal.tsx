@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
-import { generateEmailVerifierInputs } from "@zk-email/helpers";
-import { verifyDKIMSignature } from "@zk-email/helpers/dist/dkim";
+// import { generateEmailVerifierInputs } from "@zk-email/helpers";
+// import { verifyDKIMSignature } from "@zk-email/helpers/dist/dkim";
 
 import { UltraHonkBackend } from "@aztec/bb.js";
 import { Noir } from "@noir-lang/noir_js";
@@ -47,11 +47,11 @@ function toBoundedVec(input: string | Uint8Array): {
 export default function SubmitEmailModal() {
   const [showModal, setShowModal] = useState(false);
 
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file ? file.name : null); // Store file name in state
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      setSelectedFile(file ? file.name : null); // Store file name in state
   };
 
   async function getFileContentAsString(file: File): Promise<string> {
@@ -72,55 +72,60 @@ export default function SubmitEmailModal() {
     const file = formData.get("uploadFile") as File;
     const content = await getFileContentAsString(file);
 
-    const inputParams = {
-      maxBodyLength: 25216, // Required to avoid exceeding ZK circuit limit
-    };
+    console.log(content);
 
-    const verifier = await generateEmailVerifierInputs(content, inputParams);
+    // const inputParams = {
+    //   maxBodyLength: 25216, // Required to avoid exceeding ZK circuit limit
+    // };
 
-    console.log("Prepare data...");
-    console.log(verifier);
+    // FIXME: ZKEmail is relying on node:Buffer
+    // Which cannot be used on the frontend side...
 
-    let dkim = await verifyDKIMSignature(content);
-    console.log(dkim.headers);
+    // const verifier = await generateEmailVerifierInputs(content, inputParams);
 
-    try {
-      console.log("Loading noir circuit");
-      const noir = new Noir(circuit);
-      const backend = new UltraHonkBackend(circuit.bytecode);
+    // console.log("Prepare data...");
+    // console.log(verifier);
 
-      console.log("Backend ready");
+    // let dkim = await verifyDKIMSignature(content);
+    // console.log(dkim.headers);
 
-      const KEY_LIMBS = 17;
+    // try {
+    //   console.log("Loading noir circuit");
+    //   const noir = new Noir(circuit);
+    //   const backend = new UltraHonkBackend(circuit.bytecode);
 
-      verifier.pubkey.push("0");
+    //   console.log("Backend ready");
 
-      // const rsaPubkey = {
-      //   modulus: verifier.pubkey!.slice(0, KEY_LIMBS),
-      //   redc: verifier.pubkey!.slice(KEY_LIMBS, 2 * KEY_LIMBS),
-      // };
+    //   const KEY_LIMBS = 17;
 
-      // console.log(rsaPubkey);
+    //   verifier.pubkey.push("0");
 
-      // verifier.pubkey.push("0");
-      console.log(verifier.pubkey);
-      console.log(convertToRSAPubkey(verifier.pubkey));
+    //   // const rsaPubkey = {
+    //   //   modulus: verifier.pubkey!.slice(0, KEY_LIMBS),
+    //   //   redc: verifier.pubkey!.slice(KEY_LIMBS, 2 * KEY_LIMBS),
+    //   // };
 
-      verifier.signature.push("0");
+    //   // console.log(rsaPubkey);
 
-      const inputs = {
-        header: toBoundedVec(verifier.emailHeader!),
-        body: toBoundedVec(verifier.emailBody!),
-        pubkey: convertToRSAPubkey(verifier.pubkey),
-        signature: verifier.signature!,
-      };
-      console.log(inputs);
+    //   // verifier.pubkey.push("0");
+    //   console.log(verifier.pubkey);
+    //   console.log(convertToRSAPubkey(verifier.pubkey));
 
-      const { witness } = await noir.execute(inputs);
-    } catch (e) {
-      console.log("Issue");
-      console.log(e);
-    }
+    //   verifier.signature.push("0");
+
+    //   const inputs = {
+    //     header: toBoundedVec(verifier.emailHeader!),
+    //     body: toBoundedVec(verifier.emailBody!),
+    //     pubkey: convertToRSAPubkey(verifier.pubkey),
+    //     signature: verifier.signature!,
+    //   };
+    //   console.log(inputs);
+
+    //   const { witness } = await noir.execute(inputs);
+    // } catch (e) {
+    //   console.log("Issue");
+    //   console.log(e);
+    // }
 
     // console.log(toHex(verifier.emailBody));
 

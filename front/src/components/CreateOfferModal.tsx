@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { erc20Abi, getAddress, parseUnits } from "viem";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import Escrow from "@/data/Escrow.json";
 
-export default function CreateOfferModal({ onClose }) {
+interface CreateOfferModalProps {
+  onClose: () => void;
+}
+
+export default function CreateOfferModal({ onClose }: CreateOfferModalProps) {
   const [isApproved, setIsApproved] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -13,7 +17,7 @@ export default function CreateOfferModal({ onClose }) {
     paypalEmail: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
