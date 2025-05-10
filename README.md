@@ -14,6 +14,15 @@ However, when developing this solution, we came across some issue by using ZK-em
 
 ## Worflow illustration
 
+1. User create a escrow entry on the smart contract by locking the number of funds he wants to received on Paypal.
+2. Someone register to the entry to be willing to send paypal funds
+3. He sent the fund to the handle set by the user
+4. He will received an email where it can generate a ZK proof associated to it with the tx number
+5. He sent to the smart contract the ZK proof at the associated vote
+6. On the smart contract we check the zk proof and we can check with ROFL using Paypal API the tx
+7. unlock and send the fund to the user
+
+
 ![User Workflow](./workflow.png)
 
 
@@ -50,27 +59,19 @@ npx hardhat ignition deploy ./ignition/modules/Escrow.ts --network sapphire-test
 
 ### Frontend
 
-On the frontend side we are using next js.
+On the frontend side we are using next js. Again for using it you will have to install the dependencies and fill in the environment variable.
 
+```bash
+cd front
+pnpm install
+cp .env.example .env
+```
 
+For the environement variable, you will have to defined the `Escrow` smart contract address and the `USDC` contract address. Then, you can run it by executing:
 
-Getting access to crypto is becoming more and more difficult. You need to pass by centralized exchange, put a KYC, wait for validation...
-We are losing the peer-to-peer spirit of blockchain.
-
-While the development of solution, we can think on how we can use day to day protocol to pay some crypto.
-
-We wanted to propose an alternative from traditional exchange and let the possibility of the user to directly pay someone using paypal in exchange of crypto.
-Democratize crypto access becoming easier.
-
-ZK-Paypal
-
-1. User create a escrow entry on the smart contract by locking the number of funds he wants to received on Paypal.
-2. Someone register to the entry to be willing to send paypal funds
-3. He sent the fund to the handle set by the user
-4. He will received an email where it can generate a ZK proof associated to it with the tx number
-5. He sent to the smart contract the ZK proof at the associated vote
-6. On the smart contract we check the zk proof and we can check with ROFL using Paypal API the tx
-7. unlock and send the fund to the user
+```bash
+pnpm dev
+```
 
 ## Oasis feedback
 
