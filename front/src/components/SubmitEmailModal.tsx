@@ -6,6 +6,44 @@ import { UltraHonkBackend } from "@aztec/bb.js";
 import { Noir } from "@noir-lang/noir_js";
 import circuit from "../data/circuits.json";
 
+type BoundedVecInput = {
+  storage: number[]; // u8 array (or other type if T ≠ u8)
+  len: number; // u32 length of actual data
+};
+
+type RSAPubkey = {
+  modulus: string[]; // each string represents a Field element
+  redc: string[];
+};
+
+function convertToRSAPubkey(inputArray: string[]): RSAPubkey {
+  // Convert the input array of strings to an array of BigInts (modulus elements)
+  const modulus = inputArray.map((str) => str); // Convert each element to BigInt
+
+  // Placeholder for redc calculation - This should ideally be calculated based on the modulus
+  // For now, we're just setting it as an array of the same length (in real use, we need the Montgomery reduction)
+  const redc = modulus; // This is just a placeholder; calculate Montgomery constant if needed
+
+  // Return the RSAPubkey struct (you might need to adapt it based on how the struct is defined in your system)
+  return {
+    modulus, // An array of BigInts representing the modulus
+    redc, // An array (placeholder here) - Ideally, calculate redc properly using the modulus
+  };
+}
+
+function toBoundedVec(input: string | Uint8Array): {
+  storage: number[];
+  len: number;
+} {
+  const bytes =
+    typeof input === "string" ? new TextEncoder().encode(input) : input;
+
+  return {
+    storage: Array.from(bytes),
+    len: bytes.length,
+  };
+}
+
 export default function SubmitEmailModal() {
   const [showModal, setShowModal] = useState(false);
 
@@ -53,14 +91,32 @@ export default function SubmitEmailModal() {
 
       console.log("Backend ready");
 
-      const { witness } = await noir.execute({
-        header: dkim.headers,
-        body: dkim.body,
-        pubkey: dkim.publicKey,
-        signature: dkim.signature,
-        body_hash_index: dkim.bodyHash,
-        dkim_header_sequence: 100,
-      });
+      const KEY_LIMBS = 17;
+
+      verifier.pubkey.push("0");
+
+      // const rsaPubkey = {
+      //   modulus: verifier.pubkey!.slice(0, KEY_LIMBS),
+      //   redc: verifier.pubkey!.slice(KEY_LIMBS, 2 * KEY_LIMBS),
+      // };
+
+      // console.log(rsaPubkey);
+
+      // verifier.pubkey.push("0");
+      console.log(verifier.pubkey);
+      console.log(convertToRSAPubkey(verifier.pubkey));
+
+      verifier.signature.push("0");
+
+      const inputs = {
+        header: toBoundedVec(verifier.emailHeader!),
+        body: toBoundedVec(verifier.emailBody!),
+        pubkey: convertToRSAPubkey(verifier.pubkey),
+        signature: verifier.signature!,
+      };
+      console.log(inputs);
+
+      const { witness } = await noir.execute(inputs);
     } catch (e) {
       console.log("Issue");
       console.log(e);
