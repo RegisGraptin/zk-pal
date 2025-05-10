@@ -1,15 +1,21 @@
-# zk-pal
+# ZK-Pal - Crypto On/Off-Ramps via PayPal
 
-Accessing cryptocurrency is becoming increasingly difficult. Users must go through centralized exchanges, complete KYC procedures, and wait for validation. This undermines the peer-to-peer spirit of blockchain.
+Access to cryptocurrencies is becoming increasingly restrictive. Users must now go through centralized exchanges, complete KYC procedures, and wait for validation. ZK-Pal aims to restore trustless peer-to-peer exchange using PayPal as a fiat bridge.
 
-We wanted to propose an alternative and going back to the root spirit of blockchain by leveraging existing payment method such as Paypal to buy crypto. 
-Though this project, we wanted to introduce an on-ramps/off-ramps mechanism allowing people to create USDC offers in exchange of paypal transfer.
+Our objective is to offer an alternative aligned with the foundational principles of blockchain: decentralization and peer-to-peer exchange. By leveraging an existing payment system like PayPal, we aimed to enable users to buy and sell crypto without relying on centralized intermediaries. Through this project, we introduce an on-ramp/off-ramp mechanism where users can create and fulfill USDC offers in exchange for PayPal transfers.
 
-A user will create an offer on a smart contract on Oasis Sapphire, allowing them to store sensitive information as paypal handle and locking some USDC in the smart contract. Another user, willing to do a Paypal transfer, is going to "subscribe" to the smart contract. Once register, he will have to send on paypal the expected amount and download the mail from paypal for this transfer. 
+The process begins when a user creates an offer on a smart contract deployed on Oasis Sapphire. This contract allows the user to lock a specified amount of USDC and securely store sensitive information, such as their PayPal handle, using Sapphire’s confidential features. Another user, interested in purchasing the USDC, can subscribe to this offer through the contract. After subscribing, the buyer must send the agreed amount via PayPal to the seller and retrieve the confirmation email from PayPal for this transaction.
 
-Our main objective after this was to create a ZK proof with the mail, allowing us to verify the provider signature and the associated information sent. By using it and sending it to the smart contract, the smart contract can verify the information and validate it by unlocking the fund to the user.
+The buyer forwards the PayPal confirmation email to a dedicated email address, accessible only by ROFL container. This container operates within a trusted execution environment (TEE) using Oasis's ROFL system. Its role is to automatically fetch incoming emails, verify their authenticity, extract the relevant details—such as the PayPal handle and transferred amount—and, upon successful validation, interact with the Sapphire smart contract to release the locked USDC to the buyer.
 
-However, when developing this solution, we came across some issue by using ZK-email. The mail provided by Paypal is reaching the maximum size limit for the noir circuit, preventing us to create a ZK proof. To handle this case, we decided to switch our approach and rely on ROFL system form Oasis. Practically, we are using a dedicated docker container in a TEE that is going to be in charge of fetching email sent on a specific address. His role will be to process all the mail address sent to this, by verifying the mail validity and extracting the user amount and handle. Then, he will be in charge of calling the Sapphire smart contract to unlock the funds.
+
+## Development Notes
+
+Originally, we wanted to generate a zero-knowledge proof from the PayPal confirmation email. This proof would have allowed the smart contract to verify the email's authenticity, including the provider’s signature and transaction details, without exposing sensitive information. Once verified, the contract could autonomously unlock the USDC to the buyer.
+
+However, during development, we encountered a critical limitation with the ZK-email approach: the size of PayPal’s confirmation emails exceeded the capacity of the Noir circuit, making it impossible to generate a valid proof. As a result, we pivoted to a more practical and scalable solution by leveraging Oasis’s ROFL system, which enables secure off-chain email processing through a trusted execution environment.
+
+
 
 
 ## Worflow illustration
