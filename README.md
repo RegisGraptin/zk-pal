@@ -1,4 +1,24 @@
-# ZK-Pal - Crypto On/Off-Ramps via PayPal
+<a id="readme-top"></a>
+
+<br />
+<div align="center">
+  <a href="#">
+    <img src="./logo.jpeg" alt="Logo" width="250" height="250">
+  </a>
+
+<h3 align="center">ZK-Pal - Crypto On/Off-Ramps via PayPal</h3>
+<p align="center" style="font-style: italic; font-size: 1.2em;">Built during <a href="https://www.ethdam.com/">ETH Dam III</a></p>
+  <p align="center">
+    Reinventing Crypto Access: A Decentralized Peer-to-Peer PayPal Exchange
+    <br />
+    <br />
+    <a href="https://github.com/RegisGraptin/zk-pal">Code</a>
+    &middot;
+    <a href="https://zk-pal.vercel.app/">View Demo</a>
+    &middot;
+    <a href="#">Video Presentation</a>
+  </p>
+</div>
 
 Access to cryptocurrencies is becoming increasingly restrictive. Users must now go through centralized exchanges, complete KYC procedures, and wait for validation. ZK-Pal aims to restore trustless peer-to-peer exchange using PayPal as a fiat bridge.
 
