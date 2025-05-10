@@ -4,9 +4,34 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useState } from "react";
 import CreateOfferModal from "./CreateOfferModal";
 import OfferCard from "./OfferCard";
+import { getAddress } from "viem";
+
+import Escrow from "@/data/Escrow.json";
+import { useReadContract, useReadContracts } from "wagmi";
 
 export default function DashboardLayout() {
   const [showModal, setShowModal] = useState(false);
+
+  // Read all the entries available
+  const { data: activeEntries, isLoading: activeEntriesLoading } =
+    useReadContract({
+      address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
+      abi: Escrow.abi,
+      functionName: "getActiveEntries",
+      args: [],
+    });
+
+  const { data: entires } = useReadContracts({
+    contracts: Array.from(activeEntries as []).map((_, index) => ({
+      abi: Escrow.abi,
+      address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
+      functionName: "bottleData",
+      args: [index],
+    })),
+  });
+
+  console.log("activeEntries:", activeEntries);
+
   const [offers] = useState([
     { id: 1, amount: 50, token: "USDC", status: "Pending", locked: 50 },
     { id: 2, amount: 100, token: "USDT", status: "Completed", locked: 0 },

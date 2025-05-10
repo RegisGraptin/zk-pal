@@ -14,6 +14,15 @@ importers:
       '@noir-lang/noir_js':
         specifier: 1.0.0-beta.3
         version: 1.0.0-beta.3
+      '@oasisprotocol/sapphire-paratime':
+        specifier: ^2.1.0
+        version: 2.1.0
+      '@oasisprotocol/sapphire-viem-v2':
+        specifier: ^2.0.1
+        version: 2.0.1(@oasisprotocol/sapphire-paratime@2.1.0)(@wagmi/core@2.17.1(@tanstack/query-core@5.75.7)(@types/react@19.1.3)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(typescript@5.8.3)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@oasisprotocol/sapphire-wagmi-v2':
+        specifier: ^2.1.0
+        version: 2.1.0(64bbdfd6c9c265f3f321c30fedb2d790)
       '@rainbow-me/rainbowkit':
         specifier: ^2.2.4
         version: 2.2.4(@tanstack/react-query@5.75.7(react@19.1.0))(@types/react@19.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(wagmi@2.15.2(@tanstack/query-core@5.75.7)(@tanstack/react-query@5.75.7(react@19.1.0))(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4))
@@ -36,10 +45,10 @@ importers:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
       viem:
-        specifier: ~2.29.1
+        specifier: 2.x
         version: 2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       wagmi:
-        specifier: ^2.15.2
+        specifier: 2.x
         version: 2.15.2(@tanstack/query-core@5.75.7)(@tanstack/react-query@5.75.7(react@19.1.0))(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)
     devDependencies:
       '@eslint/eslintrc':
@@ -583,6 +592,10 @@ packages:
     resolution: {integrity: sha512-7YDlXiNMdO1YZeH6t/kvopHHbIZzlxrCV9WLqCY6QhcXOoXiNCMDqJIglZ9Yjx5+w7Dz30TITFrlTjnRg7sKEg==}
     engines: {node: ^14.21.3 || >=16}
 
+  '@noble/hashes@1.3.2':
+    resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
+    engines: {node: '>= 16'}
+
   '@noble/hashes@1.4.0':
     resolution: {integrity: sha512-V1JJ1WTRUqHHrOSh597hURcMqVKVGL/ea3kv0gSnEdsEZ0/+VyPghM1lMNGc00z7CIQorSvbKpuJkxvuHbvdbg==}
     engines: {node: '>= 16'}
@@ -630,6 +643,46 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@oasisprotocol/deoxysii@0.0.6':
+    resolution: {integrity: sha512-TI51bIpChfsla9aRbjip6zvTbz6rpsqKgM7MqJvSfeFF6G5xLXQcbSC9u/1hOnOOazd7HaqA9NvaXQdeKCb3yw==}
+
+  '@oasisprotocol/sapphire-paratime@2.1.0':
+    resolution: {integrity: sha512-47rultnc9gyCrk/U/MJlzEEbnC0LHrhKjh7gqlP0ctqsuCsoDAb3YIx2Mrewthx6vJl95c26Ek4+QPMWnT+CAg==}
+
+  '@oasisprotocol/sapphire-viem-v2@2.0.1':
+    resolution: {integrity: sha512-8r9q3+DwsPHm1Zvr0k+XFNPibUh/qJDXXhb5ojD1AsmRXHnyKSNo9KsR4uiYD5YPHfXhR5VNp01c76loOfPcbw==}
+    peerDependencies:
+      '@oasisprotocol/sapphire-paratime': ^2.0.0
+      '@wagmi/core': 2.x
+      typescript: '>=5.0.4'
+      viem: ^2.6.9
+    peerDependenciesMeta:
+      '@oasisprotocol/sapphire-paratime':
+        optional: true
+      '@wagmi/core':
+        optional: true
+      typescript:
+        optional: true
+
+  '@oasisprotocol/sapphire-wagmi-v2@2.1.0':
+    resolution: {integrity: sha512-0llOwbSsvqtr/NqbI+hqRKv99bxVYyDYKxrs8AvWdJYS3PX4oXEDZdftasAl6S2YGS+K2bwdI1dPUyRdifHsRA==}
+    peerDependencies:
+      '@oasisprotocol/sapphire-paratime': ^2.1.0
+      '@oasisprotocol/sapphire-viem-v2': ^2.0.1
+      '@wagmi/core': 2.x
+      typescript: '>=5.0.4'
+      viem: 2.x
+      wagmi: 2.x
+    peerDependenciesMeta:
+      '@oasisprotocol/sapphire-paratime':
+        optional: true
+      '@oasisprotocol/sapphire-viem-v2':
+        optional: true
+      '@wagmi/core':
+        optional: true
+      typescript:
+        optional: true
 
   '@paulmillr/qr@0.2.1':
     resolution: {integrity: sha512-IHnV6A+zxU7XwmKFinmYjUcwlyK9+xkG3/s9KcQhI9BjQKycrJ1JRO+FbNYPwZiPKW3je/DR0k7w8/gLa5eaxQ==}
@@ -1321,6 +1374,10 @@ packages:
 
   caniuse-lite@1.0.30001717:
     resolution: {integrity: sha512-auPpttCq6BDEG8ZAuHJIplGw6GODhjw+/11e7IjpnYCxZcW/ONgPs0KVBJ0d1bY3e2+7PRe5RCLyP+PfwVgkYw==}
+
+  cborg@1.10.2:
+    resolution: {integrity: sha512-b3tFPA9pUr2zCUiCfRd2+wok2/LBSNUMKOuRRok+WlvvAgEt/PlbgPTsZUcwCOs53IJvLgTp0eotwtosE6njug==}
+    hasBin: true
 
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
@@ -4313,6 +4370,8 @@ snapshots:
     dependencies:
       '@noble/hashes': 1.8.0
 
+  '@noble/hashes@1.3.2': {}
+
   '@noble/hashes@1.4.0': {}
 
   '@noble/hashes@1.7.0': {}
@@ -4350,6 +4409,32 @@ snapshots:
   '@noir-lang/types@1.0.0-beta.3': {}
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@oasisprotocol/deoxysii@0.0.6': {}
+
+  '@oasisprotocol/sapphire-paratime@2.1.0':
+    dependencies:
+      '@noble/hashes': 1.3.2
+      '@oasisprotocol/deoxysii': 0.0.6
+      cborg: 1.10.2
+
+  '@oasisprotocol/sapphire-viem-v2@2.0.1(@oasisprotocol/sapphire-paratime@2.1.0)(@wagmi/core@2.17.1(@tanstack/query-core@5.75.7)(@types/react@19.1.3)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(typescript@5.8.3)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))':
+    dependencies:
+      viem: 2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+    optionalDependencies:
+      '@oasisprotocol/sapphire-paratime': 2.1.0
+      '@wagmi/core': 2.17.1(@tanstack/query-core@5.75.7)(@types/react@19.1.3)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      typescript: 5.8.3
+
+  '@oasisprotocol/sapphire-wagmi-v2@2.1.0(64bbdfd6c9c265f3f321c30fedb2d790)':
+    dependencies:
+      viem: 2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
+      wagmi: 2.15.2(@tanstack/query-core@5.75.7)(@tanstack/react-query@5.75.7(react@19.1.0))(@types/react@19.1.3)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.8.3)(utf-8-validate@5.0.10)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)
+    optionalDependencies:
+      '@oasisprotocol/sapphire-paratime': 2.1.0
+      '@oasisprotocol/sapphire-viem-v2': 2.0.1(@oasisprotocol/sapphire-paratime@2.1.0)(@wagmi/core@2.17.1(@tanstack/query-core@5.75.7)(@types/react@19.1.3)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(typescript@5.8.3)(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@wagmi/core': 2.17.1(@tanstack/query-core@5.75.7)(@types/react@19.1.3)(react@19.1.0)(typescript@5.8.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.29.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      typescript: 5.8.3
 
   '@paulmillr/qr@0.2.1': {}
 
@@ -5759,6 +5844,8 @@ snapshots:
   camelcase@5.3.1: {}
 
   caniuse-lite@1.0.30001717: {}
+
+  cborg@1.10.2: {}
 
   chalk@4.1.2:
     dependencies:
@@ -7267,7 +7354,7 @@ snapshots:
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/curves': 1.8.1
-      '@noble/hashes': 1.7.1
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.3)(zod@3.24.4)
@@ -7281,7 +7368,7 @@ snapshots:
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.3)(zod@3.22.4)
@@ -7295,7 +7382,7 @@ snapshots:
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
       '@noble/curves': 1.8.2
-      '@noble/hashes': 1.7.2
+      '@noble/hashes': 1.8.0
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4
       abitype: 1.0.8(typescript@5.8.3)(zod@3.24.4)
