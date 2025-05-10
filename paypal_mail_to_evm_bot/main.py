@@ -64,8 +64,8 @@ if __name__ == "__main__":
         os.getenv("IMAP_USERNAME"),
         os.getenv("IMAP_PASSWORD")
     )
-    # provider.connect()
-    # handles = provider.fetch_paypal_emails("service@paypal.fr")
+    provider.connect()
+    handles = provider.fetch_paypal_emails("service@paypal.fr")
 
     w3 = Web3(Web3.HTTPProvider("https://testnet.sapphire.oasis.io"))
 
@@ -76,19 +76,19 @@ if __name__ == "__main__":
     contract_address = "0x50222E3513d8e4Ae8EC9B965979994364a10200F"
     contract = w3.eth.contract(address=contract_address, abi=abi)
 
-    print(contract.functions.proofOfPaiement())
+    for name, amount in handles:
+        formatted_amount = int(float(amount) * (10 ** 6))
+        tx = contract.functions.proofOfPaiement(name, formatted_amount).build_transaction({
+            "from": sender_address,
+            "nonce": w3.eth.get_transaction_count(sender_address),
+            'gas': 100_000,
+            'gasPrice': w3.to_wei(500, 'gwei'),
+            'chainId': 23295
+        })
 
-    tx = {
-        'nonce': nonce,
-        'to': '0x50222E3513d8e4Ae8EC9B965979994364a10200F',
-        'gas': 21000,
-        'gasPrice': w3.to_wei(50, 'gwei'),
-        'chainId': 23295  # Sapphire-Testnet
-    }
+        signed_tx = w3.eth.account.sign_transaction(tx, private_key)
+        tx_hash = w3.eth.send_raw_transaction(signed_tx.raw_transaction)
 
-    print(tx)
-    # signed_tx = w3.eth.account.sign_transaction(tx, private_key)
 
-    # tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
 
     
