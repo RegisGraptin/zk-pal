@@ -97,7 +97,6 @@ export default function CreateOfferModal({ onClose }: CreateOfferModalProps) {
               <span className="label-text">PayPal Email</span>
             </label>
             <input
-              type="email"
               placeholder="your@paypal.com"
               className="input input-bordered"
               value={formData.paypalEmail}
