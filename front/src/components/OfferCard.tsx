@@ -22,7 +22,7 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
   const { address: userAddress } = useAccount();
 
   const [signature, setSignature] = useState();
-  const [siweMsg, setSiweMsg] = useState();
+  const [siweMsg, setSiweMsg] = useState<String>();
 
   const { writeContract } = useWriteContract();
 
@@ -120,7 +120,7 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Paypal handle:</span>
-              <span className="font-medium">{paypalHandle}</span>
+              <span className="font-medium">{paypalHandle as String}</span>
             </div>
           </div>
         )}

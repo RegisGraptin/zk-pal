@@ -33,8 +33,6 @@ contract Escrow is SiweAuth {
 
     event NewSubscription(uint256, address);
 
-    event NewSubscription(uint256, address);
-
     /// @notice Track the last ID 
     uint256 lastEntryId;
 
