@@ -1,0 +1,8 @@
+services:
+  oracle:
+    environment:
+      CONTRACT_ADDRESS: 0xabc
+    build:
+      dockerfile: Dockerfile
+    entrypoint: /bin/sh -c 'sleep 100; python main.py --network http://sapphire-localnet:8545 --ollama-address http://ollama:11434 --secret 0xabc 0xabc'
+    restart: on-failure
