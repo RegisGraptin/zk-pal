@@ -1,8 +1,6 @@
 import asyncio
 import requests
 
-from ollama import Client, ChatResponse
-
 from .ContractUtility import ContractUtility
 from .RoflUtility import RoflUtility
 
