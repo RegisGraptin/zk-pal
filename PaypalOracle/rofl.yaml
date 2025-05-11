@@ -1,0 +1,45 @@
+name: PaypalOracle
+version: 0.1.0
+tee: tdx
+kind: container
+resources:
+  memory: 512
+  cpus: 1
+  storage:
+    kind: disk-persistent
+    size: 512
+artifacts:
+  firmware: https://github.com/oasisprotocol/oasis-boot/releases/download/v0.4.2/ovmf.tdx.fd#db47100a7d6a0c1f6983be224137c3f8d7cb09b63bb1c7a5ee7829d8e994a42f
+  kernel: https://github.com/oasisprotocol/oasis-boot/releases/download/v0.4.2/stage1.bin#02903bd0ddfe1e3552e95767f1be17e801690d73d90bb1e800aa4879ba46c4d7
+  stage2: https://github.com/oasisprotocol/oasis-boot/releases/download/v0.4.2/stage2-podman.tar.bz2#6f2487aa064460384309a58c858ffea9316e739331b5c36789bb2f61117869d6
+  container:
+    runtime: https://github.com/oasisprotocol/oasis-sdk/releases/download/rofl-containers%2Fv0.5.0/rofl-containers#800be74e543f1d10d12ef6fadce89dd0a0ce7bc798dbab4f8d7aa012d82fbff1
+    compose: compose.yaml
+deployments:
+  default:
+    app_id: rofl1qp35vv3ulcdrp6z7c7xtqnk067q4c8f0jgs2xtnl
+    network: testnet
+    paratime: sapphire
+    admin: test_rofl
+    oci_repository: rofl.sh/3e967e08-521c-468a-8c64-26cead90bae9:1746960027
+    trust_root:
+      height: 26546269
+      hash: 91a120ec3c366b874b2a57510cedf31aaa8071089b353ec5703f1bcc50079eee
+    policy:
+      quotes:
+        pcs:
+          tcb_validity_period: 30
+          min_tcb_evaluation_data_number: 18
+          tdx: {}
+      enclaves:
+        - id: +4hBH+5lJE0Y/DUeMXbiSXeDj3dBGLME356o75sYp9sAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+        - id: D/m7SHJza6wgEN2YwX7AhzZG1QkdWIowDTFjTv2AnCcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+      endorsements:
+        - any: {}
+      fees: endorsing_node
+      max_expiration: 3
+    machines:
+      default:
+        provider: oasis1qp2ens0hsp7gh23wajxa4hpetkdek3swyyulyrmz
+        offer: playground_short
+        id: "0000000000000085"
