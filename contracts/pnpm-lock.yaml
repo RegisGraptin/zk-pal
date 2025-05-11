@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@oasisprotocol/sapphire-contracts':
+        specifier: ^0.2.14
+        version: 0.2.14
       '@openzeppelin/contracts':
         specifier: ^5.3.0
         version: 5.3.0
@@ -477,6 +480,9 @@ packages:
 
   '@oasisprotocol/deoxysii@0.0.6':
     resolution: {integrity: sha512-TI51bIpChfsla9aRbjip6zvTbz6rpsqKgM7MqJvSfeFF6G5xLXQcbSC9u/1hOnOOazd7HaqA9NvaXQdeKCb3yw==}
+
+  '@oasisprotocol/sapphire-contracts@0.2.14':
+    resolution: {integrity: sha512-FYdJnHsnIBBME1Ggxc3pC1+NBa9HCaI/x4pDxSF2yBYbWvcFsd9M5+TJqP1BlZq6Z4D08v1+ahIcTzKF4YaGiw==}
 
   '@oasisprotocol/sapphire-hardhat@2.22.2':
     resolution: {integrity: sha512-43YYfsySrK/arbkurMd/AVOHpGwsZVvOrvQIS+TV8b56T0izLJuwe99Vou8U9GGiShBwFRuKl+J7pQWwvGWzPg==}
@@ -3394,6 +3400,10 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.2
 
   '@oasisprotocol/deoxysii@0.0.6': {}
+
+  '@oasisprotocol/sapphire-contracts@0.2.14':
+    dependencies:
+      '@openzeppelin/contracts': 5.3.0
 
   '@oasisprotocol/sapphire-hardhat@2.22.2(hardhat@2.24.0(ts-node@10.9.2(@types/node@22.15.17)(typescript@5.8.3))(typescript@5.8.3))':
     dependencies:

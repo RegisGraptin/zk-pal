@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+import { SiweAuth } from "@oasisprotocol/sapphire-contracts/contracts/auth/SiweAuth.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./ERC20Mock.sol";
 
-contract Escrow {
+contract Escrow is SiweAuth {
     
     enum Status {
         AVAILABLE,
@@ -33,11 +34,11 @@ contract Escrow {
 
     mapping(uint256 => EscrowEntry) private entries;
     mapping(string => uint256) private handleToId;
-    mapping(uint256 => address) private isLocked;
+    mapping(uint256 => address) public isLocked;
 
     uint256[] public activeEntries;
 
-    constructor (address _usdc) {
+    constructor (address _usdc) SiweAuth("localhost") {
         USDC = _usdc;
     }
 
@@ -50,11 +51,11 @@ contract Escrow {
         return (entry.amount, entry.status);
     }
 
-    function getPaypalHandle(uint256 id) external view returns (string memory) {
-        require(isLocked[id] == msg.sender, "NOT_AUTHORIZED");
+    function getPaypalHandle(uint256 id, bytes memory token) external view returns (string memory) {
+        require(isLocked[id] == msg.sender || isLocked[id] == authMsgSender(token), "NOT_AUTHORIZED");
         return entries[id].paypalHandle;
     }
-
+      
     function createEntry(
         string memory paypalHandle,
         uint256 amount
