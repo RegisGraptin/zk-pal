@@ -4,7 +4,7 @@ import SubmitEmailModal from "./SubmitEmailModal";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 
 import Escrow from "@/data/Escrow.json";
-import { ethers } from "ethers";
+import { ethers, Signature } from "ethers";
 import { useEffect, useState } from "react";
 
 enum Status {
@@ -43,8 +43,6 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
     args: [offerId],
   });
 
-  // token = await messageBox.(siweMsg, sig);
-
   const { data: token, error } = useReadContract({
     address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
     abi: Escrow.abi,
@@ -55,25 +53,15 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
     },
   });
 
-  console.log(siweMsg);
-  console.log("signature", signature);
-
-  console.log("error", error);
-  console.log("token", token);
-
-  // const {
-  //   data: paypalHandle,
-  //   error,
-  //   isPending,
-  // } = useReadContract({
-  //   address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
-  //   abi: Escrow.abi,
-  //   functionName: "getPaypalHandle",
-  //   args: [offerId, signature],
-  //   query: {
-  //     enabled: !!signature,
-  //   },
-  // });
+  const { data: paypalHandle } = useReadContract({
+    address: getAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!),
+    abi: Escrow.abi,
+    functionName: "getPaypalHandle",
+    args: [offerId, token],
+    query: {
+      enabled: !!signature && !!siweMsg && !!token,
+    },
+  });
 
   // console.log(paypalHandle);
   // console.log(error);
@@ -86,6 +74,7 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
   }, [userAddress, lockedAddress]);
 
   async function getSecretMessage() {
+    console.log("Generate ?");
     // Stored in browser session.
     const siweMsg = new SiweMessage({
       domain: "localhost",
@@ -97,10 +86,15 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
 
     setSiweMsg(siweMsg);
 
-    const signature = await window.ethereum.request({
+    let signature = await window.ethereum.request({
       method: "personal_sign",
       params: [siweMsg, userAddress],
     });
+
+    signature = Signature.from(signature);
+
+    // console.log("typeof signature");
+    console.log(signature);
 
     setSignature(signature);
   }
@@ -126,7 +120,7 @@ export default function OfferCard({ offerId, offer }: OfferCardProps) {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Paypal handle:</span>
-              <span className="font-medium">{"paypalHandle"}</span>
+              <span className="font-medium">{paypalHandle}</span>
             </div>
           </div>
         )}
