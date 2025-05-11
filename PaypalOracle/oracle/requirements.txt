@@ -4,3 +4,4 @@ pytest
 oasis-sapphire-py
 imap_tools
 httpx
+python-dotenv

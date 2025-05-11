@@ -1,5 +1,7 @@
 # Oasis Oracle and PayPal Escrow Processor
 
+this part of the project has big portions taken from: https://github.com/oasisprotocol/demo-rofl-chatbot
+
 This project provides a versatile oracle service for Oasis Sapphire environments and includes a specialized feature for processing PayPal payment emails to interact with an Escrow smart contract.
 
 ## 1. Installation
